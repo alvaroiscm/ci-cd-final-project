@@ -1,0 +1,48 @@
+# -------------------------------
+# Tarea de Lint / Limpieza
+# -------------------------------
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: lint-task
+spec:
+  steps:
+    - name: lint
+      image: python:3.11
+      script: |
+        pip install flake8
+        flake8 service --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 service --count --max-complexity=10 --max-line-length=127 --statistics
+
+---
+# -------------------------------
+# Tarea de Pruebas
+# -------------------------------
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: test-task
+spec:
+  steps:
+    - name: run-tests
+      # Para Python usando nose
+      image: python:3.11
+      script: |
+        pip install -r requirements.txt
+        pip install nose
+        nosetests
+
+# -------------------------------
+# Alternativa para Node.js usando Jest
+# -------------------------------
+# apiVersion: tekton.dev/v1
+# kind: Task
+# metadata:
+#   name: test-task
+# spec:
+#   steps:
+#     - name: run-tests
+#       image: node:18
+#       script: |
+#         npm install
+#         npm test
